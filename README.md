@@ -1,192 +1,68 @@
 # AT-ATs
-## <i>A Star Wars Themed Applicant Tracking System<i>
-**note that it's current stage really just checks the quality of a resume by scanning PDFs**
+## *A Star Wars Themed Applicant Tracking System*
+
+**Current stage:** The tool primarily evaluates resume quality by scanning and comparing PDF resumes against a Markdown version.
 
 ## How it Works
-- Upload your resume (must be a pdf)
-- You get a grade (grades are not quantified numerically internally but all the users see is where they fall as a Jedi)
+- Upload your resume (must be a PDF)
+- Assigned a Star Wars character based on resume quality using LLM scoring system
+- Your result places you in one of several thematic categories (users only see the final Star Wars ranking, not a numerical score)
 
----
-**Categories**
+## Ranking Categories
+
+The system assigns your resume to a Star Wars-inspired category, reflecting its overall strength and fit.
+
 ```
 Force-Sensitive
-├─ Jedi
-│  ├─ Youngling
-│  ├─ Padawan
-│  ├─ Knight
-│  └─ Master
-├─ Sith
-│  ├─ Apprentice
-│  └─ Lord
-├─ Dark Side (Non-Sith)
-│  ├─ Inquisitorius
-│  ├─ Nightsisters
-│  └─ Acolytes
-└─ Light/Neutral (Non-Jedi)
-   ├─ Force Adepts
-   └─ Unaffiliated Sensitives
+├─ Jedi  
+│ ├─ Youngling  
+│ ├─ Padawan  
+│ ├─ Knight  
+│ └─ Master  
+├─ Sith  
+│ ├─ Apprentice  
+│ └─ Lord  
+└─ Light/Neutral (Non-Jedi)  
+   ├─ Force Adepts  
+   └─ Unaffiliated Sensitives  
+
 Droids
-├─ Astromech
-├─ Protocol
-├─ Service / Utility
-├─ Medical
-├─ Battle
-├─ Hunter / Assassin
-├─ Security
-├─ Probe
-├─ Industrial
-├─ Science / Analysis
-├─ Companion
-└─ Tactical / Command (new)
+├─ Astromech  
+├─ Protocol  
+├─ Medical  
+├─ Battle  
+├─ Assassin  
+└─ Security  
 
 Organic Personnel
-├─ Humans
-├─ Near-Humans
-├─ Aliens
-│  ├─ Soldiers
-│  ├─ Pilots
-│  ├─ Medics
-│  ├─ Engineers
-│  └─ Officers
+├─ Rebel Operatives / Spies  
+├─ Imperial Offices  
+├─ Civilians / Workers  
+├─ Soldiers  
+├─ Pilots 
+└─ Prisoners / Laborers  
 
 Cyborgs
-├─ Augmented humans
-└─ Hybrid combatants
+└─ Technologically-Augmented  
 
 Non-Combat Roles
-├─ Politicians
-├─ Diplomats
-├─ Intelligence / Spies
-└─ Criminal Organizations
+├─ Politicians  
+├─ Diplomats  
+├─ Intelligence  
+├─ Family or Support  
+└─ Criminal Organizations  
 ```
-**<i>Dark side is a way of using the force.</i>**
+**Note:** The Dark Side represents a way of using the Force — all Sith use the Dark Side, but not all Dark Side users are Sith.
 
-**<i>Therefore All Sith use the Dark Side and not all Dark Side users are Sith.</i>**
+## Quick Examples (to illustrate the theme)
 
-## Examples:
+- **Jedi Master** → Yoda, Mace Windu  
+- **Jedi Knight** → Obi-Wan Kenobi, Luke Skywalker  
+- **Sith Lord** → Darth Sidious (Palpatine)  
+- **Astromech Droid** → R2-D2 
+- **Protocol Droid** → C-3PO  
+- **Battle Droid** → Droidekas  
+- **Cyborg** → General Grevious
+- **Non-Combat Politician** → Padmé Amidala  
 
-## **Force-Sensitive**
-
-### **Jedi**
-
-* **Youngling**
-
-  * Grogu
-* **Padawan**
-
-  * Ahsoka Tano
-  * Anakin Skywalker
-* **Knight**
-
-  * Obi-Wan Kenobi
-  * Luke Skywalker
-* **Master**
-
-  * Yoda
-  * Mace Windu
-
----
-
-### **Sith**
-
-* **Apprentice**
-
-  * Darth Vader
-  * Darth Maul
-* **Lord**
-
-  * Darth Sidious
-  * Darth Tyranus
-
----
-
-### **Dark Side (Non-Sith)**
-
-* **Inquisitorius**
-
-  * Grand Inquisitor
-  * Reva Sevander
-* **Nightsisters**
-
-  * Asajj Ventress
-  * Mother Talzin
-* **Acolytes**
-
-  * Kylo Ren
-
----
-
-### **Light / Neutral (Non-Jedi)**
-
-* **Force Adepts**
-
-  * Chirrut Îmwe
-* **Unaffiliated Sensitives**
-
-  * Leia Organa
-  * Rey
-
----
-
-## **Droids**
-
-* **Astromech** – R2-D2, BB-8
-* **Protocol** – C-3PO
-* **Service / Utility** – GNK “Gonk” droids
-* **Medical** – 2-1B
-* **Battle** – B1 Battle Droids, Droidekas
-* **Hunter / Assassin** – IG-88, IG-11
-* **Security** – K-2SO
-* **Probe** – Imperial Probe Droids
-* **Industrial** – Mining droids
-* **Science / Analysis** – Lobot (borderline droid/cyborg)
-* **Companion** – BD-1
-* **Tactical / Command** – Super Tactical Droid
-
----
-
-## **Organic Personnel**
-
-### **Humans**
-
-* **Soldiers** – Han Solo
-* **Pilots** – Wedge Antilles
-* **Medics** – Kix
-* **Engineers** – Galen Erso
-* **Officers** – Grand Moff Tarkin
-
-### **Near-Humans**
-
-* Grand Admiral Thrawn
-
-### **Aliens**
-
-* **Soldiers** – Chewbacca
-* **Pilots** – Nien Nunb
-* **Officers** – Ackbar
-
----
-
-## **Cyborgs**
-
-* **Augmented Humans**
-
-  * Luke Skywalker
-* **Hybrid Combatants**
-
-  * General Grievous
-  * Darth Vader
-
----
-
-## **Non-Combat Roles**
-
-* **Politicians** – Padmé Amidala
-* **Diplomats** – Bail Organa
-* **Intelligence / Spies** – Cassian Andor
-* **Criminal Organizations**
-
-  * Jabba the Hutt
-  * Qi'ra
-
----
+Higher Force-sensitive ranks (especially Jedi Master) generally indicate stronger, better-optimized resumes. Lower or non-Force categories suggest room for improvement in formatting, clarity, or content.

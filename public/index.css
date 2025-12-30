@@ -1,11 +1,175 @@
-:root{
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        @font-face {
+            font-family: "Aurebesh Bold";
+            src: url("./fonts/aurebesh-cufonfonts/Aurebesh Bold.otf");
+        }
+        @font-face {
+            font-family: "mandalore";
+            src: url("./fonts/mandalore/mandalore.ttf");
+        }
+        body{
+            background-color: rgb(239, 237, 229);
+        }
+        /* ------- NAVIGATION ------- */
+        #nav_title{
+            display         : flex;
+            flex-direction  : row;
+            padding: 10px 0px 0px 10px;
+        }
+        .nav{
+            display         : flex;
+            flex-direction  : column;
+            position        : fixed;
+            top             : 0;
+            width           : 100%;
 
-}
-body{
-    display: flex;
-    width: 100vw;
-    height: 100vh;
+            border-bottom: 1px solid black;
+        }
+        .nav_title_box{
+            height  : 130px;
+            width   : 130px;
+            
+            margin  : 2px;
+            
+            text-align: center;
+            line-height: 125px;
+            
+            border: 1px solid black;
+            border-radius: 10px;
 
-    align-items: center;
-    justify-content:center;
-}
+            font-family: "mandalore";
+            font-size: 60px;
+        }
+
+        #nav_tagline{
+            padding: 5px 0px 10px 10px;
+
+            font-family: "mandalore";
+            font-style: italic;
+            font-size: 25px;
+        }
+        /* ^^^^^^^ NAVIGATION ^^^^^^^ */
+
+
+
+
+        /* ------- MAIN BODY ------- */
+        .main_container{
+            display         : flex;
+            align-items     : center;
+            justify-content : center;
+
+            padding-top: 200px;
+        }
+
+        .resume_drop_box{
+            display         : flex;
+            flex-direction  : column;
+            align-items     : center;
+            justify-content : center;
+
+            background-color: rgb(15, 15, 15);
+            border: 7px solid rgb(160, 160, 160);
+            border-radius: 40px;
+            box-shadow: 10px 10px 0 rgb(0, 0,0);
+
+            height: fit-content;
+            width: 600px;
+        }
+
+        #display_file{
+            height  : 100px;
+            width   : 500px;
+
+            overflow: hidden;
+
+            margin: 20px 0 0 0;
+
+            border: 4px solid rgb(160, 160, 160);
+            border-radius: 10px;
+
+            background-color: rgba(0, 162, 255, 0.407);
+        }
+
+        /* Single animated track - moves everything together */
+        .marquee-track {
+            display: inline-flex;
+            white-space: nowrap;
+            will-change: transform; /* GPU acceleration */
+            animation: marquee 12s linear infinite;
+        }
+
+        /* Each content block (duplicated for seamless loop) */
+        .marquee-content {
+            display: inline-flex;
+            align-items: center; /* Vertical alignment */
+            line-height: 100px;
+            color: rgb(0, 238, 255);
+            text-shadow:
+                0 0 2px rgb(0, 238, 255),
+                0 0 5px rgb(0, 238, 255),
+                0 0 5px rgb(0, 238, 255);
+        }
+
+        .marquee-content .aurebesh {
+            font-family: "Aurebesh Bold";
+            font-size: 25px;
+            padding: 0 40px 0 40px;
+        }
+
+        .marquee-content .normal {
+            font-size: 30px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } /* -50% because we have 2 copies */
+        }
+
+        #add_file_button{
+            width: 400px;
+
+            padding : 10px;
+            margin  : 30px 0 20px 0;
+
+            font-size: 25px;
+
+            border        : 1px solid black;
+            border-radius : 10px;
+
+            background-color: white;
+            transition: transform 20ms cubic-bezier(1, 0, 0, 1),
+              background-color 500ms ease-out, font-weight 600ms ease-out;
+        }
+
+        #add_file_button:hover{
+            transform       : scale(1.02);
+            background-color: rgba(235, 33, 46, 0.900);
+            border-color    : rgba(18, 18, 18, 0.806);
+        }
+        #add_file_button:active{
+            transform: scale(0.99);
+            font-weight: normal;
+        }
+        #hidden_file_input{
+            display: none;
+            border: 1px solid black;
+        }
+        /* ^^^^^^^ MAIN BODY SECTION ^^^^^^^ */
+
+
+
+        /* ------- FOOTER SECTION ------- */
+        
+        .footer{
+            width: 100%;
+
+            padding: 10px;
+
+            border-top: 1px solid black;
+            position: fixed;
+            bottom: 0;
+        }

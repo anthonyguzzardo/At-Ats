@@ -12,6 +12,7 @@
         }
         body{
             background-color: rgb(239, 237, 229);
+            padding-bottom: 80px; /* space for fixed footer */
         }
         /* ------- NAVIGATION ------- */
         #nav_title{
@@ -59,12 +60,13 @@
         /* ------- MAIN BODY ------- */
         .main_container{
             display         : flex;
+            flex-direction: column;
             align-items     : center;
             justify-content : center;
 
             width: 100%;
 
-            padding-top: 200px;
+            padding-top: 175px;
         }
 
         .resume_drop_box{
@@ -74,26 +76,26 @@
             justify-content : center;
 
             background-color: rgba(15, 15, 15,.9);
-            border: 7px solid rgb(160, 160, 160);
-            border-radius: 40px;
-            box-shadow: 
-                8px 8px 0 rgba(0, 0, 0, 0.9),
-                -2px -2px 0 rgba(80, 80, 80, 0.3); /* subtle top-left bevel */
+            border: 3px solid rgb(160, 160, 160);
+            border-radius: 20px;
+            box-shadow:
+                4px 4px 0 rgba(0, 0, 0, 0.6),
+                -1px -1px 0 rgba(80, 80, 80, 0.2);
 
-            height: fit-content;
-            width: 600px;
+            padding: 15px 20px;
+            width: fit-content;
         }
 
         #display_file{
-            height  : 75px;
-            width   : 500px;
+            height  : 40px;
+            width   : 280px;
 
             overflow: hidden;
 
-            margin: 20px 0 20px 0;
+            margin: 10px 0 10px 0;
 
-            border: 4px solid rgb(160, 160, 160);
-            border-radius: 10px;
+            border: 2px solid rgb(160, 160, 160);
+            border-radius: 6px;
 
             background-color: rgba(0, 162, 255, 0.407);
         }
@@ -110,7 +112,7 @@
         .marquee-content {
             display: inline-flex;
             align-items: center; /* Vertical alignment */
-            line-height: 81px;
+            line-height: 40px;
             color: rgb(0, 238, 255);
             text-shadow:
                 0 0 2px rgb(0, 238, 255),
@@ -120,13 +122,13 @@
 
         .marquee-content .aurebesh {
             font-family: "Aurebesh Bold";
-            font-size: 25px;
-            padding: 0 40px 0 40px;
+            font-size: 14px;
+            padding: 0 20px;
         }
 
         .marquee-content .normal {
-            font-size: 30px;
-            padding: 0 40px 0 10px;  /* right padding creates the gap */
+            font-size: 16px;
+            padding: 0 20px 0 5px;
         }
 
         @keyframes marquee {
@@ -137,10 +139,10 @@
         #add_file_button{
             width: fit-content;
 
-            padding : 10px;
-            margin  : 0 0 20px 0;
+            padding : 6px 12px;
+            margin  : 0 0 10px 0;
 
-            font-size: 25px;
+            font-size: 14px;
 
             border        : 1px solid black;
             border-radius : 10px;
@@ -159,12 +161,12 @@
         }
 
         #add_file_button::before {
-            content: '◯';  /* or use an SVG */
+            content: '\25EF';  /* empty circle */
             margin-right: 10px;
         }
 
         #add_file_button:hover::before {
-            content: '●';
+            content: '\25CF';  /* filled circle */
             text-shadow: 0 0 10px rgba(235, 33, 46, 0.9);
         }
 
@@ -197,24 +199,72 @@
 
 
         .resume_grade_container{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
 
+            width: 100%;
+            margin-top: 30px;
         }
 
         .resume_grade_container_row{
-            display         : flex;
-            flex-direction  : row;
-            align-items     : center;
-            justify-content : center;
+            display        : flex;
+            flex-direction : column;
+            gap            : 12px;
 
-            background-color: rgba(15, 15, 15,.9);
-            border: 2px solid rgb(160, 160, 160);
+            background-color: rgb(239, 237, 229);
+            border          : 1px solid rgb(180, 180, 180);
+            border-radius   : 15px;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.15);
+
+            padding : 20px;
+            width   : 800px;
+
+            margin-top: 25px;
+
+            color: rgb(30, 30, 30);
+        }
+
+
+        .character-badge{
+            width : 16px;
+            height: 16px;
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 6px currentColor,
+                0 0 14px currentColor,
+                0 0 28px currentColor;
+        }
+
+        .lightsaber-loader{
+            width : 100%;
+            height: 10px;
+
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0.9),
+                rgba(235, 33, 46, 0.9),
+                rgba(255,255,255,0.9)
+            );
+
+            background-size: 200% 100%;
+            animation: saber-pulse 1s linear infinite;
+
             border-radius: 5px;
-            box-shadow: 
-                8px 8px 0 rgba(0, 0, 0, 0.9),
-                -2px -2px 0 rgba(80, 80, 80, 0.3); /* subtle top-left bevel */
 
-            height: fit-content;
-            width: 600px;
+            box-shadow:
+                0 0 10px rgba(235, 33, 46, 0.9),
+                0 0 25px rgba(235, 33, 46, 0.6),
+                0 0 50px rgba(235, 33, 46, 0.3);
+        }
+
+        @keyframes saber-pulse{
+            0%   { background-position: 0% 0; }
+            100% { background-position: 200% 0; }
         }
 
 
@@ -229,4 +279,5 @@
             border-top: 1px solid black;
             position: fixed;
             bottom: 0;
+            background-color: rgb(239, 237, 229); /* match body bg */
         }

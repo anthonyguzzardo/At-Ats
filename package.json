@@ -4,10 +4,11 @@
     "@anthropic-ai/sdk": "^0.71.2"
   },
   "devDependencies": {
-    "@types/node": "^25.0.3"
+    "@types/node": "^25.0.3",
+    "typescript": "^5.7.2"
   },
   "scripts": {
     "build": "tsc",
-    "dev": "npm run build && node dist/server.js"
+    "dev": "npm run build && node --env-file=.env dist/server.js"
   }
 }

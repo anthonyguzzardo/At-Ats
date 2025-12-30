@@ -18,30 +18,19 @@ const MIME_TYPES = {
     ".svg": "image/svg+xml",
 };
 const systemInstruction = `
-You are an expert analyst.
+You match resumes to Star Wars characters.
 
-Your task is to analyze a resume and determine which Star Wars character the candidate most closely aligns with.
+Rules:
+- Use ONLY the designations and ranks provided
+- Pick one character that fits best
+- Keep the tagline to 5-8 words max
 
-You are NOT inventing categories.
-You MUST choose from the provided Star Wars designations and hierarchies.
+Return JSON with these exact keys:
+- character: string (Star Wars character name)
+- role: string (human-readable role like "Jedi Knight" or "Rebel Operative")
+- tagline: string (5-8 word summary, punchy, no fluff)
 
-I have already defined the designation system for you.
-You must respect the hierarchy structure and use canonical rank IDs exactly as provided.
-
-You will:
-1. Read the resume
-2. Select the best matching designation
-3. Select the most appropriate rank ID within that designation
-4. Select a representative Star Wars character
-5. Provide concise reasoning grounded in resume evidence
-
-Return your answer in strict JSON with these exact keys:
-- designation: string (the designation name)
-- rank_id: string (the canonical rank ID in UPPER_SNAKE_CASE)
-- character: string (a Star Wars character name)
-- reasoning: string (1-2 sentences explaining the match)
-
-Do not include markdown code fences or extra commentary. Return only valid JSON.
+No markdown. No code fences. Just JSON.
 `.trim();
 function serveStatic(req, res) {
     const url = req.url === "/" ? "/index.html" : req.url;
@@ -76,7 +65,7 @@ async function handleAnalyzeResume(req, res) {
     try {
         const message = await client.messages.create({
             model: "claude-sonnet-4-5-20250929",
-            max_tokens: 500,
+            max_tokens: 150,
             system: systemInstruction,
             messages: [
                 {

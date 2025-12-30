@@ -18,10 +18,9 @@ const hiddenFileInput = document.querySelector<HTMLInputElement>("#hidden_file_i
 // TYPES
 // ======================
 type StarWarsResult = {
-  designation : string;
-  rank_id     : string;
-  character   : string;
-  reasoning   : string;
+  character : string;
+  role      : string;
+  tagline   : string;
 };
 
 // ======================
@@ -46,18 +45,6 @@ async function analyzeResume(resumeText: string): Promise<StarWarsResult> {
   return await res.json();
 }
 
-function colorForDesignation(designation: string): string {
-  switch (designation) {
-    case "Force-Sensitive":
-      return "var(--jedi-blue)";
-    case "Sith":
-      return "var(--sith-red)";
-    case "Droids":
-      return "var(--droid-gray)";
-    default:
-      return "var(--neutral-purple)";
-  }
-}
 
 // ======================
 // EVENT LISTENERS
@@ -100,19 +87,16 @@ hiddenFileInput?.addEventListener("change", async (ev: Event) => {
     const result     = await analyzeResume(resumeText);
 
     // Render result
-    const characterRow = document.createElement("div");
-    characterRow.className = "resume_grade_container_row";
+    const card = document.createElement("div");
+    card.className = "result-card";
 
-    const color = colorForDesignation(result.designation);
-
-    characterRow.innerHTML = `
-      <div class="character-badge" style="background:${color}"></div>
-      <h1>${result.character}</h1>
-      <div class="resume_example">${result.rank_id}</div>
-      <p>${result.reasoning}</p>
+    card.innerHTML = `
+      <h2 class="result-character">${result.character}</h2>
+      <span class="result-role">${result.role}</span>
+      <p class="result-tagline">"${result.tagline}"</p>
     `;
 
-    container.appendChild(characterRow);
+    container.appendChild(card);
 
   } catch (err) {
     console.error(err);

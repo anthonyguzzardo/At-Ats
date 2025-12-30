@@ -1,4 +1,5 @@
-# ATs-ATs is a Star Wars Themed Applicant Tracking System
+# AT-ATs
+## <i>A Star Wars Themed Applicant Tracking System<i>
 **note that it's current stage really just checks the quality of a resume by scanning PDFs**
 
 ## How it Works

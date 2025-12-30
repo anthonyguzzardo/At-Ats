@@ -69,7 +69,7 @@
             width: 400px;
         }
 
-        #disiplay_file{
+        #display_file{
             all: unset;
             height: 100px;
             width: 300px;
@@ -92,16 +92,20 @@
             border-radius : 10px;
 
             background-color: white;
-            transition: transform 150ms cubic-bezier(1, 0, 0, 1),  background-color 500ms ease-out;
+            transition: transform 150ms cubic-bezier(1, 0, 0, 1),
+              background-color 500ms ease-out, font-weight 600ms ease-out;
         }
 
         #add_file_button:hover{
             transform       : scale(1.02);
             background-color: rgba(235, 33, 46, 0.900);
             border-color    : rgba(18, 18, 18, 0.806);
+            
+            font-weight: bold;
         }
         #add_file_button:active{
             transform: scale(0.99);
+            font-weight: normal;
         }
         #hidden_file_input{
             display: none;
@@ -136,7 +140,7 @@
 
     <div class="main_container">
         <div class="resume_drop_box">
-            <input id="disiplay_file" readonly>
+            <input id="display_file" readonly>
             <button id="add_file_button" type="button" onclick="renderFilePicker()">
                 Upload Resume (PDF or MD)
             </button>

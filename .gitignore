@@ -1,1 +1,5 @@
 resumes/
+
+# environment variables
+config.json
+.env

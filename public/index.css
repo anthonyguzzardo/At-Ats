@@ -62,6 +62,8 @@
             align-items     : center;
             justify-content : center;
 
+            width: 100%;
+
             padding-top: 200px;
         }
 
@@ -71,10 +73,12 @@
             align-items     : center;
             justify-content : center;
 
-            background-color: rgb(15, 15, 15);
+            background-color: rgba(15, 15, 15,.9);
             border: 7px solid rgb(160, 160, 160);
             border-radius: 40px;
-            box-shadow: 10px 10px 0 rgb(0, 0,0);
+            box-shadow: 
+                8px 8px 0 rgba(0, 0, 0, 0.9),
+                -2px -2px 0 rgba(80, 80, 80, 0.3); /* subtle top-left bevel */
 
             height: fit-content;
             width: 600px;
@@ -141,16 +145,46 @@
             border        : 1px solid black;
             border-radius : 10px;
 
-            background-color: white;
-            transition: transform 20ms cubic-bezier(1, 0, 0, 1),
-              background-color 500ms ease-out, font-weight 600ms ease-out;
+            /* Lightsaber gradient setup */
+            background: linear-gradient(90deg,
+                rgba(235, 33, 46, 0.900) -1%,
+                rgba(235, 33, 46, 0.900) 46%,
+                white 46%,
+                white 100%);
+            background-size: 250% 100%;
+            background-position: 100% 0; /* Start with white visible */
+
+            transition: transform 100ms cubic-bezier(1, 0, 0, 1),
+              background-position 300ms ease-out, font-weight 300ms ease-out;
         }
 
-        #add_file_button:hover{
-            transform       : scale(1.02);
-            background-color: rgba(235, 33, 46, 0.900);
-            border-color    : rgba(18, 18, 18, 0.806);
+        #add_file_button::before {
+            content: '◯';  /* or use an SVG */
+            margin-right: 10px;
         }
+
+        #add_file_button:hover::before {
+            content: '●';
+            text-shadow: 0 0 10px rgba(235, 33, 46, 0.9);
+        }
+
+
+        #add_file_button:hover {
+            transform: scale(1.06);
+            background-position: 0% 0;
+            border-color: rgba(235, 33, 46, 0.8);
+            font-weight: bold;
+            border-left: none;
+            
+            /* Lightsaber glow - layered for bloom effect */
+            box-shadow: 
+                inset 0 0 5px rgba(255, 255, 255, 0.3), /* white hot core */
+                0 0 5px rgba(235, 33, 46, 0.9),
+                0 0 15px rgba(235, 33, 46, 0.6),
+                0 0 30px rgba(235, 33, 46, 0.4),
+                0 0 50px rgba(235, 33, 46, 0.2);
+        }
+
         #add_file_button:active{
             transform: scale(0.99);
             font-weight: normal;
@@ -160,6 +194,28 @@
             border  : 1px solid black;
         }
         /* ^^^^^^^ MAIN BODY SECTION ^^^^^^^ */
+
+
+        .resume_grade_container{
+
+        }
+
+        .resume_grade_container_row{
+            display         : flex;
+            flex-direction  : row;
+            align-items     : center;
+            justify-content : center;
+
+            background-color: rgba(15, 15, 15,.9);
+            border: 2px solid rgb(160, 160, 160);
+            border-radius: 5px;
+            box-shadow: 
+                8px 8px 0 rgba(0, 0, 0, 0.9),
+                -2px -2px 0 rgba(80, 80, 80, 0.3); /* subtle top-left bevel */
+
+            height: fit-content;
+            width: 600px;
+        }
 
 
 

@@ -1,87 +1,226 @@
-export interface Designation {
-    name        : string;                   // EX: Force-Sensitive
-    hierarchy   : Record<string, readonly string[]>; // EX: Jedi, [Youngling, Padawan, Knight, Master]
-    examples    : Record<string, readonly string[]>; // EX: Jedi Knight, [Annikan, Obi-Wan Kanobi, Quagon Jim]
+type Rank = {
+  id    : string;
+  label : string;
+};
 
-    // or if the hierarchy is flat
-    // EX: "", [Astromech, Protocol, Medical, etc. etc.]
+export type Hierarchy = Record<string, readonly Rank[]>;
+
+type RankOf<H extends Hierarchy> =
+  H[keyof H][number]["id"];
+
+
+
+export interface Designation<H extends Hierarchy> {
+  name      : string;
+  hierarchy : H;
+  examples  : Partial<Record<RankOf<H>, readonly string[]>>;
 }
-// предупреж ... means warning 
-// STATIC
-const Designations    : readonly string[] = [
-  "Force-Sensitive","Droids","Organic Personnel","Cyborgs","Non-Combat Roles",
- ] as const;
 
-const ForceSensitive  : Designation = {
-  name      : "Force-Sensitive",
-  hierarchy : {
-    Jedi              : ["Youngling","Padawan","Knight","Master"],
-    Sith              : ["Apprentice","Lord"],
-    "Light / Neutral" : ["Force Adepts","Guardians of the Whills","Unaffiliated Sensitives"],
-  },
-  examples  : {
-    "Jedi Youngling"          : ["Grogu"],
-    "Jedi Padawan"            : ["Anakin Skywalker (pre-Knight)","Obi-Wan Kenobi (pre-Knight)"],
-    "Jedi Knight"             : ["Obi-Wan Kenobi","Anakin Skywalker","Luke Skywalker","Qui-Gon Jinn"],
-    "Jedi Master"             : ["Yoda","Mace Windu","Ki-Adi-Mundi","Plo Koon"],
-    "Sith Apprentice"         : ["Darth Maul","Count Dooku"],
-    "Sith Lord"               : ["Darth Sidious (Emperor Palpatine)","Darth Vader"],
-    "Force Adept"             : ["Chirrut Îmwe"],
-    "Guardians of the Whills" : ["Chirrut Îmwe","Baze Malbus"],
-  },
+
+
+// REGION: Hierarchies
+const FORCE_SENSITIVE_HIERARCHY = {
+  Jedi: [
+    { id: "YOUNGLING", label: "Youngling" },
+    { id: "PADAWAN",   label: "Padawan" },
+    { id: "KNIGHT",    label: "Knight" },
+    { id: "MASTER",    label: "Master" },
+  ],
+  Sith: [
+    { id: "APPRENTICE", label: "Apprentice" },
+    { id: "LORD",       label: "Lord" },
+  ],
+  Neutral: [
+    { id: "FORCE_ADEPT",     label: "Force Adept" },
+    { id: "WHILLS_GUARDIAN", label: "Guardian of the Whills" },
+    { id: "UNAFFILIATED",    label: "Unaffiliated Sensitive" },
+  ],
 } as const;
 
-const Droids          : Designation = {
+
+const DROID_HIERARCHY = {
+  Type: [
+    { id: "ASTROMECH", label: "Astromech" },
+    { id: "PROTOCOL",  label: "Protocol" },
+    { id: "BATTLE",    label: "Battle" },
+    { id: "MEDICAL",   label: "Medical" },
+    { id: "ASSASSIN",  label: "Assassin" },
+    { id: "SECURITY",  label: "Security" },
+    { id: "PILOT",     label: "Pilot" },
+  ],
+} as const;
+
+
+const ORGANIC_PERSONNEL_HIERARCHY = {
+  Type: [
+    { id: "REBEL_OPERATIVES",  label: "Rebel Operatives / Spies" },
+    { id: "IMPERIAL_OFFICERS", label: "Imperial Officers" },
+    { id: "PRISONERS",         label: "Prisoners / Laborers" },
+    { id: "CIVILIANS",         label: "Civilians / Workers" },
+    { id: "SOLDIERS",          label: "Soldiers" },
+    { id: "PILOTS",            label: "Pilots" },
+  ],
+} as const;
+
+
+const CYBORG_HIERARCHY = {
+  Type: [
+    { id: "TECHNOLOGICALLY_AUGMENTED", label: "Technologically-Augmented" },
+  ],
+} as const;
+
+
+const NON_COMBAT_ROLE_HIERARCHY = {
+  Type: [
+    { id: "POLITICIANS",       label: "Politicians" },
+    { id: "DIPLOMATS",         label: "Diplomats" },
+    { id: "INTELLIGENCE",      label: "Intelligence" },
+    { id: "FAMILY_SUPPORT",    label: "Family or Support" },
+    { id: "BUREAUCRATS",       label: "Bureaucrats" },
+  ],
+} as const;
+
+// REGION: Designations
+
+
+const ForceSensitive: Designation<typeof FORCE_SENSITIVE_HIERARCHY> = {
+  name: "Force-Sensitive",
+  hierarchy: FORCE_SENSITIVE_HIERARCHY,
+  examples: {
+    YOUNGLING  : ["Grogu"],
+    PADAWAN    : ["Anakin Skywalker", "Obi-Wan Kenobi"],
+    KNIGHT     : ["Luke Skywalker"],
+    MASTER     : ["Yoda"],
+    APPRENTICE : ["Darth Maul"],
+    LORD       : ["Darth Vader"],
+    FORCE_ADEPT: ["Chirrut Îmwe"],
+  },
+};
+
+
+const Droids : Designation<typeof DROID_HIERARCHY> = {
   name      : "Droids",
-  hierarchy : { "" : ["Astromech","Protocol","Battle","Medical","Assassin","Security","Pilot"] },
+  hierarchy : DROID_HIERARCHY,
   examples  : {
-    Astromech : ["R2-D2","R4-P17"],
-    Protocol  : ["C-3PO"],
-    Battle    : ["B1 Battle Droid","B2 Super Battle Droid","Droideka"],
-    Medical   : ["2-1B","FX-7"],
-    Assassin  : ["IG-88","IG-11"],
-    Security  : ["K-2SO","IG-100 Magnaguard"],
+    ASTROMECH : ["R2-D2","R4-P17"],
+    PROTOCOL  : ["C-3PO"],
+    BATTLE    : ["B1 Battle Droid","B2 Super Battle Droid","Droideka"],
+    MEDICAL   : ["2-1B","FX-7"],
+    SECURITY  : ["IG-88","IG-11"],
+    PILOT  : ["K-2SO","IG-100 Magnaguard"],
   },
 } as const;
 
-const OrganicPersonnel: Designation = {
+const OrganicPersonnel: Designation<typeof ORGANIC_PERSONNEL_HIERARCHY> = {
   name      : "Organic Personnel",
-  hierarchy : {
-    "" : [
-      "Rebel Operatives / Spies","Imperial Officers","Prisoners / Laborers",
-      "Civilians / Workers","Soldiers","Pilots",
-    ],
-  },
+  hierarchy : ORGANIC_PERSONNEL_HIERARCHY,
   examples  : {
-    Rebel_Operatives_or_Spies : [
-      "Cassian Andor","Luthen Rael","Kleya Marki","Vel Sartha","Cinta Kaz",
-      "Karis Nemik","Ruescott Melshi","Saw Gerrera","Mon Mothma",
+    REBEL_OPERATIVES : [
+      "Cassian Andor",
+      "Luthen Rael",
+      "Kleya Marki",
+      "Vel Sartha",
+      "Cinta Kaz",
+      "Karis Nemik",
+      "Ruescott Melshi",
+      "Saw Gerrera",
+      "Mon Mothma",
     ],
-    Imperial_Officers         : [
-      "Dedra Meero","Syril Karn","Major Lio Partagaz",
-      "Orson Krennic","Lieutenant Gorn","Sergeant Linus Mosk",
+
+    IMPERIAL_OFFICERS : [
+      "Dedra Meero",
+      "Syril Karn",
+      "Major Lio Partagaz",
+      "Orson Krennic",
+      "Lieutenant Gorn",
+      "Sergeant Linus Mosk",
     ],
-    Prisoners_or_Laborers     : ["Kino Loy","Wilmon Paak"],
-    Civilians_or_Workers      : ["Maarva Andor","Brasso","Bix Caleen","Clem Andor"],
+
+    PRISONERS : [
+      "Kino Loy",
+      "Wilmon Paak",
+    ],
+
+    CIVILIANS : [
+      "Maarva Andor",
+      "Brasso",
+      "Bix Caleen",
+      "Clem Andor",
+    ],
+
+    SOLDIERS : [],
+
+    PILOTS : [],
   },
 } as const;
 
-const Cyborgs         : Designation = {
+
+const Cyborgs : Designation<typeof CYBORG_HIERARCHY> = {
   name      : "Cyborgs",
-  hierarchy : { "" : ["Technologically-Augmented"] },
-  examples  : { "Technologically-Augmented" : ["General Grievous"] },
+  hierarchy : CYBORG_HIERARCHY,
+  examples  : { TECHNOLOGICALLY_AUGMENTED : ["General Grievous"] },
 } as const;
 
-const NonCombatRoles  : Designation = {
+const NonCombatRoles : Designation<typeof NON_COMBAT_ROLE_HIERARCHY> ={
   name      : "Non-Combat Roles",
-  hierarchy : {
-    "" : ["Politicians","Diplomats","Intelligence","Family or Support","Bureaucrats"],
-  },
+  hierarchy : NON_COMBAT_ROLE_HIERARCHY,
   examples  : {
-    Politicians       : ["Padmé Amidala","Mon Mothma","Bail Organa"],
-    Diplomats         : ["Bail Organa","Mon Mothma"],
-    Intelligence      : ["Luthen Rael","Kleya Marki","Lonni Jung","General Draven"],
-    Family_or_Support : ["Maarva Andor","Eedy Karn"],
-    Bureaucrats       : ["Dedra Meero","Major Lio Partagaz","Syril Karn"],
+    POLITICIANS       : ["Padmé Amidala","Mon Mothma","Bail Organa"],
+    DIPLOMATS         : ["Bail Organa","Mon Mothma"],
+    INTELLIGENCE      : ["Luthen Rael","Kleya Marki","Lonni Jung","General Draven"],
+    FAMILY_SUPPORT : ["Maarva Andor","Eedy Karn"],
+    BUREAUCRATS       : ["Dedra Meero","Major Lio Partagaz","Syril Karn"],
   },
 } as const;
+
+export const ALL_DESIGNATIONS: Designation<Hierarchy>[] = [
+  ForceSensitive,
+  Droids,
+  OrganicPersonnel,
+  Cyborgs,
+  NonCombatRoles,
+];
+
+function createMarkdown(designations: Designation<Hierarchy>[]) : string{
+  let markdown = "";
+
+  for (const designation of designations) {
+    markdown += `## Name\n**${designation.name}**\n\n`;
+    markdown += `---\n`;
+
+    // Hierarchy
+    markdown += `## Hierarchy\n`;
+    for (const [groupName, ranks] of Object.entries(designation.hierarchy)) {
+      if (groupName) {
+        markdown += `### ${groupName}\n`;
+      }
+
+      for (const rank of ranks) {
+        markdown += `- ${rank.label} \`(${rank.id})\`\n`;
+      }
+    }
+
+    markdown += `\n---\n`;
+
+    // Examples
+    markdown += `## Examples\n`;
+    for (const [rankId, people] of Object.entries(designation.examples)) {
+      if (!people || people.length === 0) continue;
+
+      markdown += `### ${rankId}\n`;
+      for (const person of people) {
+        markdown += `- ${person}\n`;
+      }
+    }
+
+    markdown += `\n---\n\n`;
+  }
+
+  return markdown;
+}
+
+export const starWarsDesignationsMarkdown =
+  createMarkdown(ALL_DESIGNATIONS);
+
+
+

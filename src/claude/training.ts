@@ -1,28 +1,36 @@
+/**
+ * Claude Integration Module
+ *
+ * Handles communication with the Claude API to analyze resumes
+ * and classify them as Star Wars characters.
+ */
+
 import Anthropic from "@anthropic-ai/sdk";
 import { starWarsDesignationsMarkdown } from "../designation.js";
+import type { StarWarsResult } from "../shared/types.js";
 
-// ======================
-// TYPES
-// ======================
-export type ResumeStarWarsResult = {
-  designation      : string;
-  rank_id          : string;
-  character        : string;
-  evidence_excerpt : string;
-  reasoning        : string;
-};
 
-// ======================
-// CLIENT
-// ======================
+/**
+ * Re-export for backwards compatibility.
+ * New code should import from shared/types.js directly.
+ */
+export type ResumeStarWarsResult = StarWarsResult;
+
+
+/**
+ * The Anthropic client instance.
+ * Uses the API key from environment variables.
+ */
 const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY ?? "ANTHROPIC_API_KEY",
+    apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-// ======================
-// SYSTEM INSTRUCTION
-// ======================
-const systemInstruction = `
+
+/**
+ * System instruction for the Claude model.
+ * Defines the task, constraints, and expected output format.
+ */
+const SYSTEM_INSTRUCTION = `
 You are an expert analyst.
 
 Your task is to analyze a resume and determine which Star Wars character the candidate most closely aligns with.
@@ -52,10 +60,12 @@ Return your answer in strict JSON with the following fields:
 Do not include markdown, explanations, or extra keys.
 `.trim();
 
-// ======================
-// SUPPORTING PROMPT TEXT
-// ======================
-const explainStarwarsMarkdownStructure = `
+
+/**
+ * Explains the structure of the designation markdown document.
+ * Helps Claude understand how to interpret the reference material.
+ */
+const MARKDOWN_STRUCTURE_EXPLANATION = `
 This document is generated from a structured Star Wars designation model.
 
 Each designation follows the same layout:
@@ -81,7 +91,12 @@ The examples section only references those ranks by ID, ensuring consistency.
 This separation allows stable machine-safe identifiers while preserving human-readable labels.
 `.trim();
 
-const exampleReturnSets = `
+
+/**
+ * Example JSON responses to guide Claude's output format.
+ * Shows the expected structure for different designation types.
+ */
+const EXAMPLE_RESPONSES = `
 {
   "designation": "Force-Sensitive",
   "rank_id": "KNIGHT",
@@ -107,14 +122,17 @@ const exampleReturnSets = `
 }
 `.trim();
 
-// ======================
-// MESSAGE BUILDER
-// ======================
-function buildResumeAnalysisMessage(
-  resumeText: string,
-  fileName: string
-): string {
-  return `
+
+/**
+ * Builds the complete message to send to Claude for resume analysis.
+ * Combines the designation reference, structure explanation, examples, and the actual resume.
+ *
+ * @param resumeText - The text content of the resume to analyze.
+ * @param fileName   - The original filename of the resume.
+ * @returns The complete prompt message string.
+ */
+function buildAnalysisPrompt(resumeText: string, fileName: string): string {
+    return `
 Below is the Star Wars designation reference.
 
 ${starWarsDesignationsMarkdown}
@@ -123,13 +141,13 @@ ${starWarsDesignationsMarkdown}
 
 Explanation of the structure:
 
-${explainStarwarsMarkdownStructure}
+${MARKDOWN_STRUCTURE_EXPLANATION}
 
 ---
 
 Example return formats:
 
-${exampleReturnSets}
+${EXAMPLE_RESPONSES}
 
 ---
 
@@ -143,37 +161,53 @@ ${resumeText}
 `.trim();
 }
 
-// ======================
-// EXPORTED ENTRY POINT
-// ======================
-export async function analyzeResumeWithClaude(
-  resumeText: string,
-  fileName: string
-): Promise<ResumeStarWarsResult> {
 
-    const message = buildResumeAnalysisMessage(resumeText, fileName);
+/**
+ * Analyzes a resume using Claude and returns a Star Wars character classification.
+ *
+ * @param resumeText - The text content of the resume.
+ * @param fileName   - The original filename of the resume.
+ * @returns A promise that resolves to the Star Wars result.
+ * @throws Error if Claude returns no text or invalid JSON.
+ */
+export async function analyzeResumeWithClaude(
+    resumeText : string,
+    fileName   : string
+): Promise<StarWarsResult> {
+
+    const prompt = buildAnalysisPrompt(resumeText, fileName);
 
     const response = await client.messages.create({
-    model: "claude-sonnet-4-5-20250929",
-    max_tokens: 700,
-    system: systemInstruction,
-    messages: [
-        {
-        role: "user",
-        content: message,
-        },
-    ],
+        model      : "claude-sonnet-4-5-20250929",
+        max_tokens : 700,
+        system     : SYSTEM_INSTRUCTION,
+        messages   : [
+            {
+                role    : "user",
+                content : prompt,
+            },
+        ],
     });
 
-    const text = response.content
-    .filter(block => block.type === "text")
-    .map(block => block.text)
-    .join("");
+    // Extract text content from the response
+    const textBlocks = response.content.filter(
+        (block): block is Anthropic.TextBlock => block.type === "text"
+    );
+
+    const text = textBlocks.map(block => block.text).join("");
 
     if (!text) {
-    throw new Error("No text content returned from Claude");
+        throw new Error("No text content returned from Claude");
     }
 
-    return JSON.parse(text) as ResumeStarWarsResult;
+    // Strip markdown code block if present
+    let jsonText = text.trim();
+    if (jsonText.startsWith("```")) {
+        jsonText = jsonText.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "");
+    }
 
+    // Parse and return the JSON response
+    const result = JSON.parse(jsonText) as StarWarsResult;
+
+    return result;
 }

@@ -1,4 +1,13 @@
-// REGION: Hierarchies
+/**
+ * Star Wars Designation System
+ *
+ * Defines the hierarchy of Star Wars character categories used to classify resumes.
+ * Each designation contains a hierarchy of ranks and example characters.
+ */
+/**
+ * Force-Sensitive hierarchy.
+ * Includes Jedi ranks, Sith ranks, and neutral Force users.
+ */
 const FORCE_SENSITIVE_HIERARCHY = {
     Jedi: [
         { id: "YOUNGLING", label: "Youngling" },
@@ -16,6 +25,10 @@ const FORCE_SENSITIVE_HIERARCHY = {
         { id: "UNAFFILIATED", label: "Unaffiliated Sensitive" },
     ],
 };
+/**
+ * Droid hierarchy.
+ * Categorizes droids by their primary function.
+ */
 const DROID_HIERARCHY = {
     Type: [
         { id: "ASTROMECH", label: "Astromech" },
@@ -27,6 +40,10 @@ const DROID_HIERARCHY = {
         { id: "PILOT", label: "Pilot" },
     ],
 };
+/**
+ * Organic Personnel hierarchy.
+ * Covers non-Force-sensitive living characters.
+ */
 const ORGANIC_PERSONNEL_HIERARCHY = {
     Type: [
         { id: "REBEL_OPERATIVES", label: "Rebel Operatives / Spies" },
@@ -37,11 +54,19 @@ const ORGANIC_PERSONNEL_HIERARCHY = {
         { id: "PILOTS", label: "Pilots" },
     ],
 };
+/**
+ * Cyborg hierarchy.
+ * For characters with significant technological augmentation.
+ */
 const CYBORG_HIERARCHY = {
     Type: [
         { id: "TECHNOLOGICALLY_AUGMENTED", label: "Technologically-Augmented" },
     ],
 };
+/**
+ * Non-Combat Role hierarchy.
+ * For characters primarily in political, diplomatic, or support roles.
+ */
 const NON_COMBAT_ROLE_HIERARCHY = {
     Type: [
         { id: "POLITICIANS", label: "Politicians" },
@@ -51,7 +76,10 @@ const NON_COMBAT_ROLE_HIERARCHY = {
         { id: "BUREAUCRATS", label: "Bureaucrats" },
     ],
 };
-// REGION: Designations
+/**
+ * Force-Sensitive designation.
+ * The highest tier, representing those who can use the Force.
+ */
 const ForceSensitive = {
     name: "Force-Sensitive",
     hierarchy: FORCE_SENSITIVE_HIERARCHY,
@@ -62,9 +90,13 @@ const ForceSensitive = {
         MASTER: ["Yoda"],
         APPRENTICE: ["Darth Maul"],
         LORD: ["Darth Vader"],
-        FORCE_ADEPT: ["Chirrut Îmwe"],
+        FORCE_ADEPT: ["Chirrut Imwe"],
     },
 };
+/**
+ * Droids designation.
+ * Mechanical beings serving various functions.
+ */
 const Droids = {
     name: "Droids",
     hierarchy: DROID_HIERARCHY,
@@ -77,6 +109,10 @@ const Droids = {
         PILOT: ["K-2SO", "IG-100 Magnaguard"],
     },
 };
+/**
+ * Organic Personnel designation.
+ * Living beings in various roles throughout the galaxy.
+ */
 const OrganicPersonnel = {
     name: "Organic Personnel",
     hierarchy: ORGANIC_PERSONNEL_HIERARCHY,
@@ -114,22 +150,36 @@ const OrganicPersonnel = {
         PILOTS: [],
     },
 };
+/**
+ * Cyborgs designation.
+ * Beings that are part organic, part machine.
+ */
 const Cyborgs = {
     name: "Cyborgs",
     hierarchy: CYBORG_HIERARCHY,
-    examples: { TECHNOLOGICALLY_AUGMENTED: ["General Grievous"] },
+    examples: {
+        TECHNOLOGICALLY_AUGMENTED: ["General Grievous"],
+    },
 };
+/**
+ * Non-Combat Roles designation.
+ * Characters who operate primarily outside of direct combat.
+ */
 const NonCombatRoles = {
     name: "Non-Combat Roles",
     hierarchy: NON_COMBAT_ROLE_HIERARCHY,
     examples: {
-        POLITICIANS: ["Padmé Amidala", "Mon Mothma", "Bail Organa"],
+        POLITICIANS: ["Padme Amidala", "Mon Mothma", "Bail Organa"],
         DIPLOMATS: ["Bail Organa", "Mon Mothma"],
         INTELLIGENCE: ["Luthen Rael", "Kleya Marki", "Lonni Jung", "General Draven"],
         FAMILY_SUPPORT: ["Maarva Andor", "Eedy Karn"],
         BUREAUCRATS: ["Dedra Meero", "Major Lio Partagaz", "Syril Karn"],
     },
 };
+/**
+ * All designations in the system.
+ * Used for generating the markdown reference and validating results.
+ */
 export const ALL_DESIGNATIONS = [
     ForceSensitive,
     Droids,
@@ -137,12 +187,19 @@ export const ALL_DESIGNATIONS = [
     Cyborgs,
     NonCombatRoles,
 ];
+/**
+ * Generates a markdown document from the list of designations.
+ * This markdown is sent to Claude as a reference for classification.
+ *
+ * @param designations - The list of designations to convert to markdown.
+ * @returns A markdown string describing all designations and their hierarchies.
+ */
 function createMarkdown(designations) {
     let markdown = "";
     for (const designation of designations) {
         markdown += `## Name\n**${designation.name}**\n\n`;
         markdown += `---\n`;
-        // Hierarchy
+        // Hierarchy section
         markdown += `## Hierarchy\n`;
         for (const [groupName, ranks] of Object.entries(designation.hierarchy)) {
             if (groupName) {
@@ -153,11 +210,12 @@ function createMarkdown(designations) {
             }
         }
         markdown += `\n---\n`;
-        // Examples
+        // Examples section
         markdown += `## Examples\n`;
         for (const [rankId, people] of Object.entries(designation.examples)) {
-            if (!people || people.length === 0)
+            if (!people || people.length === 0) {
                 continue;
+            }
             markdown += `### ${rankId}\n`;
             for (const person of people) {
                 markdown += `- ${person}\n`;
@@ -167,4 +225,8 @@ function createMarkdown(designations) {
     }
     return markdown;
 }
+/**
+ * Pre-generated markdown for all Star Wars designations.
+ * This is embedded in Claude prompts for classification reference.
+ */
 export const starWarsDesignationsMarkdown = createMarkdown(ALL_DESIGNATIONS);

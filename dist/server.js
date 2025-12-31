@@ -1,13 +1,25 @@
-import http from "node:http";
+/**
+ * AT-ATs HTTP Server
+ *
+ * Serves static files from public/ and dist/ directories,
+ * and provides the resume analysis API endpoint.
+ */
+import http, { IncomingMessage, ServerResponse } from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import Anthropic from "@anthropic-ai/sdk";
-import { starWarsDesignationsMarkdown } from "./designation.js";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { analyzeResumeWithClaude } from "./claude/training.js";
+/**
+ * Directory paths for static file serving.
+ */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const PUBLIC_DIR = path.join(__dirname, "..", "public");
-const DIST_DIR = path.join(__dirname, "..", "dist");
-const client = new Anthropic();
+const DIST_DIR = path.join(__dirname);
+/**
+ * Maps file extensions to their MIME types.
+ * Used when serving static files to set the correct Content-Type header.
+ */
 const MIME_TYPES = {
     ".html": "text/html",
     ".css": "text/css",
@@ -15,113 +27,172 @@ const MIME_TYPES = {
     ".json": "application/json",
     ".png": "image/png",
     ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
     ".svg": "image/svg+xml",
+    ".ico": "image/x-icon",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2",
+    ".ttf": "font/ttf",
+    ".otf": "font/otf",
+    ".pdf": "application/pdf",
+    ".md": "text/markdown",
 };
-const systemInstruction = `
-You match resumes to Star Wars characters.
-
-Rules:
-- Use ONLY the designations and ranks provided
-- Pick one character that fits best
-- Keep the tagline to 5-8 words max
-
-Return JSON with these exact keys:
-- character: string (Star Wars character name)
-- role: string (human-readable role like "Jedi Knight" or "Rebel Operative")
-- tagline: string (5-8 word summary, punchy, no fluff)
-
-No markdown. No code fences. Just JSON.
-`.trim();
-function serveStatic(req, res) {
-    const url = req.url === "/" ? "/index.html" : req.url;
-    // Try public first, then dist (for compiled JS)
-    let filePath = path.join(PUBLIC_DIR, url);
-    if (!fs.existsSync(filePath)) {
-        filePath = path.join(DIST_DIR, url.replace(/^\/dist/, ""));
-    }
-    if (!fs.existsSync(filePath)) {
-        filePath = path.join(__dirname, "..", url); // fallback for /dist/index.js etc
-    }
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-        const ext = path.extname(filePath);
-        const contentType = MIME_TYPES[ext] || "application/octet-stream";
-        res.writeHead(200, { "Content-Type": contentType });
-        fs.createReadStream(filePath).pipe(res);
-        return true;
-    }
-    return false;
+/**
+ * Returns the MIME type for a given file path based on its extension.
+ * Defaults to application/octet-stream if the extension is not recognized.
+ *
+ * @param filePath - The path to the file.
+ * @returns The MIME type string.
+ */
+function getMimeType(filePath) {
+    const ext = path.extname(filePath).toLowerCase();
+    return MIME_TYPES[ext] || "application/octet-stream";
 }
-async function handleAnalyzeResume(req, res) {
-    let body = "";
-    for await (const chunk of req) {
-        body += chunk;
+/**
+ * Attempts to serve a static file from the given directory.
+ * If the file exists, it streams the content to the response.
+ * If the file does not exist, it returns false so the caller can try another directory.
+ *
+ * @param dir      - The base directory to look for the file.
+ * @param urlPath  - The URL path requested by the client.
+ * @param res      - The HTTP response object.
+ * @returns A promise that resolves to true if the file was served, false otherwise.
+ */
+async function tryServeFile(dir, urlPath, res) {
+    let filePath = path.join(dir, urlPath);
+    // If requesting a directory, look for index.html
+    if (urlPath === "/" || urlPath === "") {
+        filePath = path.join(dir, "index.html");
     }
-    const { resume } = JSON.parse(body);
-    if (!resume) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "Missing resume text" }));
-        return;
+    // Prevent directory traversal attacks
+    const resolved = path.resolve(filePath);
+    if (!resolved.startsWith(path.resolve(dir))) {
+        return false;
     }
-    try {
-        const message = await client.messages.create({
-            model: "claude-sonnet-4-5-20250929",
-            max_tokens: 150,
-            system: systemInstruction,
-            messages: [
-                {
-                    role: "user",
-                    content: `
-Below is the Star Wars designation reference:
-
-${starWarsDesignationsMarkdown}
-
----
-
-Now analyze the following resume and return the best matching Star Wars character as JSON.
-
-<RESUME>
-${resume}
-</RESUME>
-          `.trim(),
-                },
-            ],
+    return new Promise((resolve) => {
+        fs.stat(resolved, (err, stats) => {
+            if (err || !stats.isFile()) {
+                resolve(false);
+                return;
+            }
+            const mimeType = getMimeType(resolved);
+            res.writeHead(200, { "Content-Type": mimeType });
+            const stream = fs.createReadStream(resolved);
+            stream.pipe(res);
+            stream.on("error", () => {
+                res.end();
+            });
+            resolve(true);
         });
-        // Extract text from response
-        const textBlock = message.content.find((block) => block.type === "text");
-        let responseText = textBlock?.type === "text" ? textBlock.text : "";
-        // Strip markdown code fences if present
-        responseText = responseText
-            .replace(/^```json\s*/i, "")
-            .replace(/^```\s*/i, "")
-            .replace(/\s*```$/i, "")
-            .trim();
-        // Parse JSON from response
-        const result = JSON.parse(responseText);
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(result));
+    });
+}
+/**
+ * Reads the entire request body and returns it as a string.
+ * Used for parsing JSON POST bodies.
+ *
+ * @param req - The HTTP request object.
+ * @returns A promise that resolves to the body string.
+ */
+function readRequestBody(req) {
+    return new Promise((resolve, reject) => {
+        const chunks = [];
+        req.on("data", (chunk) => {
+            chunks.push(chunk);
+        });
+        req.on("end", () => {
+            resolve(Buffer.concat(chunks).toString("utf-8"));
+        });
+        req.on("error", (err) => {
+            reject(err);
+        });
+    });
+}
+/**
+ * Sends a JSON response with the given status code and data.
+ *
+ * @param res        - The HTTP response object.
+ * @param statusCode - The HTTP status code to send.
+ * @param data       - The data to serialize as JSON.
+ */
+function sendJson(res, statusCode, data) {
+    res.writeHead(statusCode, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(data));
+}
+/**
+ * Handles the POST /api/analyze-resume endpoint.
+ * Parses the request body, validates required fields, calls Claude,
+ * and returns the Star Wars character result.
+ *
+ * @param req - The HTTP request object.
+ * @param res - The HTTP response object.
+ */
+async function handleAnalyzeResume(req, res) {
+    try {
+        const body = await readRequestBody(req);
+        const parsed = JSON.parse(body);
+        if (!parsed.resumeText || !parsed.fileName) {
+            const error = { error: "Missing resumeText or fileName" };
+            sendJson(res, 400, error);
+            return;
+        }
+        const result = await analyzeResumeWithClaude(parsed.resumeText, parsed.fileName);
+        sendJson(res, 200, result);
     }
     catch (err) {
-        console.error("Claude API error:", err);
-        res.writeHead(500, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "Failed to analyze resume" }));
+        console.error("Resume analysis error:", err);
+        const error = { error: "Resume analysis failed" };
+        sendJson(res, 500, error);
     }
 }
-const server = http.createServer(async (req, res) => {
-    console.log(`${req.method} ${req.url}`);
-    // API routes
-    if (req.method === "POST" && req.url === "/api/analyze-resume") {
+/**
+ * Main request handler for the HTTP server.
+ * Routes requests to the appropriate handler based on method and URL.
+ *
+ * @param req - The HTTP request object.
+ * @param res - The HTTP response object.
+ */
+async function handleRequest(req, res) {
+    const method = req.method || "GET";
+    const urlPath = req.url || "/";
+    // API endpoint: analyze resume
+    if (method === "POST" && urlPath === "/api/analyze-resume") {
         await handleAnalyzeResume(req, res);
         return;
     }
-    // Static files
-    if (req.method === "GET" && serveStatic(req, res)) {
+    // Static file serving for GET requests
+    if (method === "GET") {
+        // Try public directory first, then dist directory
+        const servedFromPublic = await tryServeFile(PUBLIC_DIR, urlPath, res);
+        if (servedFromPublic) {
+            return;
+        }
+        const servedFromDist = await tryServeFile(DIST_DIR, urlPath, res);
+        if (servedFromDist) {
+            return;
+        }
+        // File not found
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        res.end("Not Found");
         return;
     }
-    // 404
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not Found");
-});
-const PORT = process.env.PORT || 3000;
+    // Method not allowed for non-GET, non-POST requests
+    res.writeHead(405, { "Content-Type": "text/plain" });
+    res.end("Method Not Allowed");
+}
+/**
+ * The HTTP server instance.
+ */
+const server = http.createServer(handleRequest);
+/**
+ * Server configuration.
+ */
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+/**
+ * Start the server.
+ */
 server.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`Serving static files from: ${PUBLIC_DIR}`);
+    console.log(`Serving compiled JS from: ${DIST_DIR}`);
 });

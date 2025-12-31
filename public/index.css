@@ -1,287 +1,503 @@
-        *{
-            margin: 0px;
-            padding: 0px;
-        }
-        @font-face {
-            font-family: "Aurebesh Bold";
-            src: url("./fonts/aurebesh-cufonfonts/Aurebesh Bold.otf");
-        }
-        @font-face {
-            font-family: "mandalore";
-            src: url("./fonts/mandalore/mandalore.ttf");
-        }
-        body{
-            background-color: rgb(239, 237, 229);
-            padding-bottom: 80px; /* space for fixed footer */
-        }
-        /* ------- NAVIGATION ------- */
-        #nav_title{
-            display         : flex;
-            flex-direction  : row;
-            padding: 10px 0px 0px 10px;
-        }
-        .nav{
-            display         : flex;
-            flex-direction  : column;
-            position        : fixed;
-            top             : 0;
-            width           : 100%;
-
-            border-bottom: 1px solid black;
-        }
-        .nav_title_box{
-            height  : 100px;
-            width   : 100px;
-            
-            margin  : 2px;
-            
-            text-align: center;
-            line-height: 100px;
-            
-            border: 1px solid black;
-            border-radius: 10px;
-
-            font-family: "mandalore";
-            font-size: 60px;
-        }
-
-        #nav_tagline{
-            padding: 5px 0px 10px 10px;
-
-            font-family: "mandalore";
-            font-style: italic;
-            font-size: 25px;
-        }
-        /* ^^^^^^^ NAVIGATION ^^^^^^^ */
+/*
+ * AT-ATs Main Stylesheet
+ * Star Wars themed applicant tracking system.
+ *
+ * Naming convention:
+ *   - Root variables use hyphens (--variable-name)
+ *   - All classes and IDs use underscores (class_name)
+ */
 
 
+/* ============================================================
+   ROOT VARIABLES
+   ============================================================ */
+
+:root {
+    --jedi-blue      : #4a9eff;
+    --sith-red       : rgba(235, 33, 46, 0.9);
+    --sith-red-solid : rgb(235, 33, 46);
+    --droid-gold     : #c3a343;
+    --droid-gray     : #7a8b99;
+    --rebel-orange   : #ff6b35;
+    --neutral-purple : #9b59b6;
+    --empire-gray    : #2a2a2a;
+
+    --space-black    : rgb(15, 15, 15);
+    --panel-bg       : rgba(15, 15, 15, 0.9);
+    --page-bg        : rgb(239, 237, 229);
+
+    --text-primary   : rgb(239, 237, 229);
+    --text-muted     : rgb(180, 180, 180);
+    --text-dark      : rgb(0, 0, 0);
+
+    --border-light   : rgb(160, 160, 160);
+    --border-dark    : rgb(0, 0, 0);
+
+    --cyan-glow      : rgb(0, 238, 255);
+    --cyan-tint      : rgba(0, 162, 255, 0.407);
+
+    --radius-small   : 6px;
+    --radius-medium  : 10px;
+    --radius-large   : 12px;
+    --radius-xlarge  : 20px;
+}
 
 
-        /* ------- MAIN BODY ------- */
-        .main_container{
-            display         : flex;
-            flex-direction: column;
-            align-items     : center;
-            justify-content : center;
+/* ============================================================
+   GLOBAL RESET
+   ============================================================ */
 
-            width: 100%;
-
-            padding-top: 175px;
-        }
-
-        .resume_drop_box{
-            display         : flex;
-            flex-direction  : column;
-            align-items     : center;
-            justify-content : center;
-
-            background-color: rgba(15, 15, 15,.9);
-            border: 3px solid rgb(160, 160, 160);
-            border-radius: 20px;
-            box-shadow:
-                4px 4px 0 rgba(0, 0, 0, 0.6),
-                -1px -1px 0 rgba(80, 80, 80, 0.2);
-
-            padding: 15px 20px;
-            width: fit-content;
-        }
-
-        #display_file{
-            height  : 40px;
-            width   : 280px;
-
-            overflow: hidden;
-
-            margin: 10px 0 10px 0;
-
-            border: 2px solid rgb(160, 160, 160);
-            border-radius: 6px;
-
-            background-color: rgba(0, 162, 255, 0.407);
-        }
-
-        /* Single animated track - moves everything together */
-        .marquee-track {
-            display: inline-flex;
-            white-space: nowrap;
-            will-change: transform; /* GPU acceleration */
-            animation: marquee 12s linear infinite;
-        }
-
-        /* Each content block (duplicated for seamless loop) */
-        .marquee-content {
-            display: inline-flex;
-            align-items: center; /* Vertical alignment */
-            line-height: 40px;
-            color: rgb(0, 238, 255);
-            text-shadow:
-                0 0 2px rgb(0, 238, 255),
-                0 0 5px rgb(0, 238, 255),
-                0 0 5px rgb(0, 238, 255);
-        }
-
-        .marquee-content .aurebesh {
-            font-family: "Aurebesh Bold";
-            font-size: 14px;
-            padding: 0 20px;
-        }
-
-        .marquee-content .normal {
-            font-size: 16px;
-            padding: 0 20px 0 5px;
-        }
-
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); } /* -50% because we have 2 copies */
-        }
-
-        #add_file_button{
-            width: fit-content;
-
-            padding : 6px 12px;
-            margin  : 0 0 10px 0;
-
-            font-size: 14px;
-
-            border        : 1px solid black;
-            border-radius : 10px;
-
-            /* Lightsaber gradient setup */
-            background: linear-gradient(90deg,
-                rgba(235, 33, 46, 0.900) -1%,
-                rgba(235, 33, 46, 0.900) 46%,
-                white 46%,
-                white 100%);
-            background-size: 250% 100%;
-            background-position: 100% 0; /* Start with white visible */
-
-            transition: transform 100ms cubic-bezier(1, 0, 0, 1),
-              background-position 300ms ease-out, font-weight 300ms ease-out;
-        }
-
-        #add_file_button::before {
-            content: '\25EF';  /* empty circle */
-            margin-right: 10px;
-        }
-
-        #add_file_button:hover::before {
-            content: '\25CF';  /* filled circle */
-            text-shadow: 0 0 10px rgba(235, 33, 46, 0.9);
-        }
+* {
+    margin  : 0;
+    padding : 0;
+}
 
 
-        #add_file_button:hover {
-            transform: scale(1.06);
-            background-position: 0% 0;
-            border-color: rgba(235, 33, 46, 0.8);
-            font-weight: bold;
-            border-left: none;
-            
-            /* Lightsaber glow - layered for bloom effect */
-            box-shadow: 
-                inset 0 0 5px rgba(255, 255, 255, 0.3), /* white hot core */
-                0 0 5px rgba(235, 33, 46, 0.9),
-                0 0 15px rgba(235, 33, 46, 0.6),
-                0 0 30px rgba(235, 33, 46, 0.4),
-                0 0 50px rgba(235, 33, 46, 0.2);
-        }
+/* ============================================================
+   FONT FACES
+   ============================================================ */
 
-        #add_file_button:active{
-            transform: scale(0.99);
-            font-weight: normal;
-        }
-        #hidden_file_input{
-            display : none;
-            border  : 1px solid black;
-        }
-        /* ^^^^^^^ MAIN BODY SECTION ^^^^^^^ */
+@font-face {
+    font-family : "Aurebesh Bold";
+    src         : url("./fonts/aurebesh-cufonfonts/Aurebesh Bold.otf");
+}
+
+@font-face {
+    font-family : "mandalore";
+    src         : url("./fonts/mandalore/mandalore.ttf");
+}
 
 
-        .resume_grade_container{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
+/* ============================================================
+   BODY
+   ============================================================ */
 
-            width: 100%;
-            margin-top: 30px;
-        }
-
-        .result-card {
-            background: rgb(30, 30, 30);
-            border-radius: 12px;
-            padding: 24px 32px;
-            text-align: center;
-            min-width: 280px;
-            max-width: 400px;
-        }
-
-        .result-character {
-            margin: 0 0 8px 0;
-            font-size: 28px;
-            font-weight: bold;
-            color: rgb(239, 237, 229);
-            letter-spacing: 1px;
-        }
-
-        .result-role {
-            display: inline-block;
-            background: rgba(235, 33, 46, 0.8);
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            padding: 4px 12px;
-            border-radius: 20px;
-        }
-
-        .result-tagline {
-            margin: 16px 0 0 0;
-            font-size: 14px;
-            font-style: italic;
-            color: rgb(180, 180, 180);
-        }
-
-        .lightsaber-loader{
-            width : 100%;
-            height: 10px;
-
-            background: linear-gradient(
-                90deg,
-                rgba(255,255,255,0.9),
-                rgba(235, 33, 46, 0.9),
-                rgba(255,255,255,0.9)
-            );
-
-            background-size: 200% 100%;
-            animation: saber-pulse 1s linear infinite;
-
-            border-radius: 5px;
-
-            box-shadow:
-                0 0 10px rgba(235, 33, 46, 0.9),
-                0 0 25px rgba(235, 33, 46, 0.6),
-                0 0 50px rgba(235, 33, 46, 0.3);
-        }
-
-        @keyframes saber-pulse{
-            0%   { background-position: 0% 0; }
-            100% { background-position: 200% 0; }
-        }
+body {
+    background-color : var(--page-bg);
+    padding-bottom   : 100px;
+}
 
 
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
 
-        /* ------- FOOTER SECTION ------- */
-        
-        .footer{
-            width: 100%;
+.nav {
+    display        : flex;
+    flex-direction : column;
+    position       : fixed;
+    top            : 0;
+    width          : 100%;
+    z-index        : 100;
 
-            padding: 10px;
+    background-color : var(--page-bg);
+    border-bottom    : 1px solid var(--border-dark);
+}
 
-            border-top: 1px solid black;
-            position: fixed;
-            bottom: 0;
-            background-color: rgb(239, 237, 229); /* match body bg */
-        }
+#nav_title {
+    display        : flex;
+    flex-direction : row;
+    padding        : 10px 0 0 10px;
+}
+
+.nav_title_box {
+    height : 100px;
+    width  : 100px;
+    margin : 10px;
+
+    text-align  : center;
+    line-height : 100px;
+
+    border        : 1px solid var(--border-dark);
+    border-radius : var(--radius-medium);
+
+    font-family : "mandalore";
+    font-size   : 60px;
+}
+
+#nav_tagline {
+    padding : 5px 0 10px 10px;
+
+    font-family : "mandalore";
+    font-style  : italic;
+    font-size   : 25px;
+}
+
+
+/* ============================================================
+   MAIN CONTAINER
+   ============================================================ */
+
+.main_container {
+    display         : flex;
+    flex-direction  : column;
+    align-items     : center;
+    justify-content : center;
+
+    width       : 100%;
+    max-width   : 1200px;
+    margin      : 0 auto;
+    padding     : 0 1rem;
+    padding-top : 175px;
+}
+
+
+/* ============================================================
+   RESUME DROP BOX
+   ============================================================ */
+
+.resume_drop_box {
+    display         : flex;
+    flex-direction  : column;
+    align-items     : center;
+    justify-content : center;
+
+    background-color : var(--panel-bg);
+    border           : 3px solid var(--border-light);
+    border-radius    : var(--radius-xlarge);
+
+    box-shadow :
+        4px 4px 0 rgba(0, 0, 0, 0.6),
+        -1px -1px 0 rgba(80, 80, 80, 0.2);
+
+    padding : 15px 20px;
+    width   : fit-content;
+}
+
+
+/* ============================================================
+   FILE DISPLAY
+   ============================================================ */
+
+#display_file {
+    height   : 40px;
+    width    : 280px;
+    overflow : hidden;
+    margin   : 10px 0;
+
+    border           : 2px solid var(--border-light);
+    border-radius    : var(--radius-small);
+    background-color : var(--cyan-tint);
+}
+
+
+/* ============================================================
+   MARQUEE ANIMATION
+   Single animated track that moves content left continuously.
+   ============================================================ */
+
+.marquee_track {
+    display     : inline-flex;
+    white-space : nowrap;
+    will-change : transform;
+    animation   : marquee 12s linear infinite;
+}
+
+.marquee_content {
+    display     : inline-flex;
+    align-items : center;
+    line-height : 40px;
+
+    color : var(--cyan-glow);
+
+    text-shadow :
+        0 0 2px var(--cyan-glow),
+        0 0 5px var(--cyan-glow),
+        0 0 5px var(--cyan-glow);
+}
+
+.marquee_content .aurebesh {
+    font-family : "Aurebesh Bold";
+    font-size   : 14px;
+    padding     : 0 20px;
+}
+
+.marquee_content .normal {
+    font-size : 16px;
+    padding   : 0 20px 0 5px;
+}
+
+@keyframes marquee {
+    0%   { transform : translateX(0); }
+    100% { transform : translateX(-50%); }
+}
+
+
+/* ============================================================
+   UPLOAD BUTTON
+   Styled as a lightsaber that ignites on hover.
+   ============================================================ */
+
+#add_file_button {
+    width   : fit-content;
+    padding : 6px 12px;
+    margin  : 0 0 10px 0;
+
+    font-size : 14px;
+    cursor    : pointer;
+
+    border        : 1px solid var(--border-dark);
+    border-radius : var(--radius-medium);
+
+    background : linear-gradient(
+        90deg,
+        var(--sith-red) -1%,
+        var(--sith-red) 46%,
+        white 46%,
+        white 100%
+    );
+    background-size     : 250% 100%;
+    background-position : 100% 0;
+
+    transition :
+        transform 100ms cubic-bezier(1, 0, 0, 1),
+        background-position 300ms ease-out,
+        font-weight 300ms ease-out;
+}
+
+#add_file_button::before {
+    content      : '\25EF';
+    margin-right : 10px;
+}
+
+#add_file_button:hover::before {
+    content     : '\25CF';
+    text-shadow : 0 0 10px var(--sith-red);
+}
+
+#add_file_button:hover {
+    transform           : scale(1.06);
+    background-position : 0% 0;
+    border-color        : var(--sith-red);
+    font-weight         : bold;
+    border-left         : none;
+
+    box-shadow :
+        inset 0 0 5px rgba(255, 255, 255, 0.3),
+        0 0 5px var(--sith-red),
+        0 0 15px rgba(235, 33, 46, 0.6),
+        0 0 30px rgba(235, 33, 46, 0.4),
+        0 0 50px rgba(235, 33, 46, 0.2);
+}
+
+#add_file_button:active {
+    transform   : scale(0.99);
+    font-weight : normal;
+}
+
+#hidden_file_input {
+    display : none;
+}
+
+
+/* ============================================================
+   RESULTS CONTAINER
+   ============================================================ */
+
+.resume_grade_container {
+    display        : flex;
+    flex-direction : column;
+    align-items    : center;
+    gap            : 20px;
+
+    width      : 100%;
+    margin-top : 30px;
+}
+
+
+/* ============================================================
+   RESULT CARD
+   Displays the Star Wars character match.
+   ============================================================ */
+
+.result_card {
+    background    : var(--empire-gray);
+    border-radius : var(--radius-large);
+    padding       : 24px 32px;
+    text-align    : center;
+    min-width     : 280px;
+    max-width     : 500px;
+    width         : 100%;
+}
+
+.result_character {
+    margin         : 0 0 8px 0;
+    font-size      : 28px;
+    font-weight    : bold;
+    color          : var(--text-primary);
+    letter-spacing : 1px;
+}
+
+.result_designation {
+    display        : inline-block;
+    font-size      : 11px;
+    font-weight    : bold;
+    text-transform : uppercase;
+    letter-spacing : 1.5px;
+    padding        : 4px 12px;
+    border-radius  : 20px;
+    margin-bottom  : 8px;
+
+    background : var(--sith-red);
+    color      : white;
+}
+
+.result_rank {
+    display        : inline-block;
+    font-size      : 10px;
+    font-weight    : bold;
+    text-transform : uppercase;
+    letter-spacing : 1px;
+    padding        : 3px 10px;
+    border-radius  : 20px;
+    margin-left    : 8px;
+
+    background : var(--jedi-blue);
+    color      : white;
+}
+
+.result_evidence {
+    margin     : 16px 0;
+    padding    : 12px;
+    font-size  : 13px;
+    font-style : italic;
+    color      : var(--text-muted);
+
+    background    : rgba(0, 0, 0, 0.3);
+    border-left   : 3px solid var(--jedi-blue);
+    border-radius : 4px;
+    text-align    : left;
+}
+
+.result_reasoning {
+    margin    : 12px 0 0 0;
+    font-size : 14px;
+    color     : var(--text-primary);
+}
+
+
+/* ============================================================
+   LIGHTSABER LOADER
+   Animated loading bar styled as a lightsaber blade.
+   ============================================================ */
+
+.lightsaber_loader {
+    width  : 100%;
+    height : 10px;
+
+    background : linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.9),
+        var(--sith-red),
+        rgba(255, 255, 255, 0.9)
+    );
+
+    background-size : 200% 100%;
+    animation       : saber_pulse 1s linear infinite;
+    border-radius   : 5px;
+
+    box-shadow :
+        0 0 10px var(--sith-red),
+        0 0 25px rgba(235, 33, 46, 0.6),
+        0 0 50px rgba(235, 33, 46, 0.3);
+}
+
+@keyframes saber_pulse {
+    0%   { background-position : 0% 0; }
+    100% { background-position : 200% 0; }
+}
+
+
+/* ============================================================
+   ERROR STATE
+   ============================================================ */
+
+.error_message {
+    background    : rgba(235, 33, 46, 0.2);
+    border        : 1px solid var(--sith-red);
+    border-radius : var(--radius-medium);
+    padding       : 16px 24px;
+    color         : var(--sith-red-solid);
+    text-align    : center;
+    max-width     : 400px;
+}
+
+.error_message p {
+    margin : 0;
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.footer {
+    width      : 100%;
+    padding    : 10px;
+    position   : fixed;
+    bottom     : 0;
+    z-index    : 100;
+
+    background-color : var(--page-bg);
+    border-top       : 1px solid var(--border-dark);
+}
+
+.footer p {
+    text-align : center;
+    font-size  : 12px;
+    color      : var(--text-dark);
+}
+
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .main_container {
+        padding-top : 150px;
+    }
+
+    .nav_title_box {
+        height      : 70px;
+        width       : 70px;
+        line-height : 70px;
+        font-size   : 40px;
+        margin      : 5px;
+    }
+
+    #nav_title {
+        padding : 5px 0 0 5px;
+    }
+
+    .resume_drop_box {
+        width         : calc(100% - 40px);
+        margin        : 0 20px;
+        border-radius : var(--radius-medium);
+    }
+
+    #display_file {
+        width : 100%;
+    }
+
+    .result_card {
+        max-width : calc(100% - 40px);
+    }
+}
+
+@media (max-width: 480px) {
+    .main_container {
+        padding-top : 120px;
+    }
+
+    .nav_title_box {
+        height      : 50px;
+        width       : 50px;
+        line-height : 50px;
+        font-size   : 28px;
+    }
+
+    .result_character {
+        font-size : 22px;
+    }
+}
